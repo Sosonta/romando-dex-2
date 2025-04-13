@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Romando Region Map</title>
+  <link rel="stylesheet" href="map-style.css">
+</head>
+<body>
+<nav id="top-nav">
+  <a href="index.html" class="nav-link">Pokédex</a>
+  <a href="map.html" class="nav-link">Map</a>
+  <a href="poke-id.html" class="nav-link">Poke-ID</a>
+    <a href="PC.html" class="nav-link">PC</a>
+    <a href="info.html" class="nav-link">Info</a>
+</nav>
+  <h1 id="main-title">Romando Region Map</h1>
+
+  <div id="map-container">
+    <img id="world-map" src="map-assets/world-map.png" alt="Romando Region Map" />
+  </div>
+
+  <div class="bottom-spacer"></div>
+
+  <!-- 👇 Move this inside the body -->
+  <div id="user-selector" style="position: fixed; bottom: 20px; right: 80px; display: flex; align-items: center; font-family: sans-serif; z-index: 9999;">
+    <span id="active-user" title="Right-click to change user">DM</span>
+  </div>
+
+  <!-- 👇 Make sure the add button is also inside the body -->
+  <button id="add-marker-btn">+</button>
+
+  <script type="module" src="map-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+body {
+  margin: 0;
+  padding: 28px; /* match Pokédex */
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f8f8f8;
+}
+
+#map-container {
+  width: 100%;
+  max-width: none;
+  padding: 0 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative; /* needed for marker absolute positioning */
+}
+
+#map-title {
+  margin: 20px 0 40px;
+  font-size: 2.5rem;
+  text-align: center;
+}
+
+#world-map {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.bottom-spacer {
+  height: 50px;
+}
+
+/* Marker & Popup Styles */
+.marker {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+}
+
+.marker .popup {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 12px;
+  width: 220px;
+  background: rgba(255,255,255,0.95);
+  border: 1px solid #aaa;
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+  display: none;
+}
+
+.marker:hover .popup {
+  display: block;
+}
+
+.marker .popup img {
+  width: 80%;             /* 👈 reduce from 100% */
+  display: block;         /* center with margin auto */
+  margin: 0 auto 8px auto;
+  border-radius: 4px;
+}
+
+#add-marker-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  font-weight: bold;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 9999;
+  transition: background-color 0.2s;
+}
+
+#add-marker-btn:hover {
+  background-color: #555;
+}
+
+#main-title {
+  text-align: center;
+  font-size: 3rem;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  font-weight: 900;
+  color: #333;
+  font-family: 'Segoe UI', sans-serif;
+  letter-spacing: 1px;
+}
+
+#top-nav {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  background-color: #444;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.nav-link {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.nav-link:hover {
+  background-color: #666;
+}
+
+#active-user {
+  background: #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: sans-serif;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  transition: background 0.2s;
+}
+
+#active-user:hover {
+  background-color: #555;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);  /* 👈 include X and Y */
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);    /* 👈 stay horizontally centered */
+  }
+}
+
+/* Apply it to the marker popup */
+.marker .popup {
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none; /* Prevent interaction until visible */
+}
+
+/* On hover, fade in */
+.marker:hover .popup,
+.marker.editing .popup {
+  opacity: 1;
+  animation: fadeIn 0.3s ease forwards;
+  pointer-events: auto;
+  display: block; /* Ensure it's visible */
+}
+
+@keyframes shrinkOut {
+  to {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+.marker.shrinking {
+  animation: shrinkOut 0.3s ease forwards;
+}

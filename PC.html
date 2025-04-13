@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pokémon PC</title>
+  <link rel="stylesheet" href="PC.css" />
+</head>
+<body>
+  <nav id="top-nav">
+    <a href="index.html" class="nav-link">Pokédex</a>
+    <a href="map.html" class="nav-link">Map</a>
+    <a href="poke-id.html" class="nav-link">Poke-ID</a>
+    <a href="PC.html" class="nav-link">PC</a>
+    <a href="info.html" class="nav-link">Info</a>
+  </nav>
+
+<div id="login-block" class="hidden">
+  <p style="text-align: center; font-size: 1.2rem; color: #444; margin-top: 40px;">
+    Log into your Poke-ID to access your PC.
+  </p>
+</div>
+
+<div id="pc-container">
+  <h2>Party</h2>
+  <div id="team-grid" class="team-row">
+    <!-- 8 static team slots will be rendered here -->
+  </div>
+
+  <h2>PC</h2>
+  <div id="pc-grid">
+    <!-- Pokémon + Add tile will be rendered here -->
+  </div>
+</div>
+<div id="character-sheet-container" class="hidden">
+  <!-- Character sheet for selected Pokémon will go here -->
+</div>
+  <!-- Modal -->
+  <div id="poke-modal" class="hidden">
+    <div id="poke-modal-content">
+      <h3>Select a Pokémon</h3>
+      <div id="poke-image-grid">
+        <!-- Dynamically filled with seen Pokémon images -->
+      </div>
+      <button id="close-modal">Cancel</button>
+    </div>
+  </div>
+<!-- Context Menu -->
+<div id="context-menu" class="hidden">
+  <button id="summary-btn">Summary</button>
+  <button id="release-btn">Release</button>
+</div>
+<script type="module" src="PC.js" defer></script>
+</body>
+</html>

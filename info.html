@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Info</title>
+  <link rel="stylesheet" href="info.css" />
+</head>
+<body>
+  <!-- ✅ Navigation -->
+  <div id="top-nav">
+    <a class="nav-link" href="index.html">Pokédex</a>
+    <a class="nav-link" href="map.html">Map</a>
+    <a class="nav-link" href="poke-id.html">Poke-ID</a>
+    <a class="nav-link" href="pc.html">PC</a>
+    <a class="nav-link current" href="info.html">Info</a>
+  </div>
+
+  <!-- ✅ Button container -->
+  <div id="info-container">
+    <button class="info-btn" onclick="openFeats()">Feats</button>
+    <button class="info-btn" onclick="openPDF('Moves-and-Abilities.pdf')">Moves & Abilities</button>
+    <button class="info-btn" onclick="openPDF('Items.pdf')">Items</button>
+    <button class="info-btn" onclick="openPDF('National-Pokedex.pdf')">National Pokedex</button>
+    <button class="info-btn" onclick="openImage('Exp-Chart.png')">Exp Chart</button>
+  </div>
+
+  <script src="info.js"></script>
+</body>
+</html>

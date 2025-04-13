@@ -1,0 +1,522 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  background: #f0f0f0;
+  padding: 20px;
+}
+
+.pokedex-entry {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  background: white;
+  max-width: 1200px;
+  margin: auto;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  margin-bottom: 60px; /* 👈 Add this line */
+}
+
+img {
+  border-radius: 12px;
+  max-width: 100%;
+}
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5px;
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5px; /* ⬅️ This controls spacing between moves */
+}
+
+
+.entry-section h3 {
+  margin: 0 0 6px;
+}
+
+.locked {
+  background: #bbb;
+  color: #222;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  user-select: none;
+  cursor: pointer;
+  font-family: sans-serif;
+  border-radius: 2px; /* ⬅️ Sharper corner */
+}
+
+.unlocked {
+  padding: 10px;
+  background: #f0f0f0; /* Light grey */
+  border-radius: 2px;
+}
+
+/* Add this to your style.css */
+.entry-section pre {
+  font-family: 'Courier New', monospace;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.bubble-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* 👈 Center the bubbles */
+  gap: 8px;
+}
+
+.bubble {
+  background: #444;
+  color: white;
+  padding: 6px;
+  border-radius: 3px;
+  font-size: 0.95em;
+  font-weight: bold;
+  text-align: center;
+  width: 150px;         /* 👈 fixed width */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.entry-section strong {
+  margin-right: 8px;
+}
+
+.entry-section {
+  margin: 5px 0; /* Reduce vertical spacing between all sections */
+}
+
+#pokedex-wrapper {
+  max-width: 1200px;
+  margin: auto;
+}
+
+#dex-title {
+  margin-left: 30px; /* Same as padding from #pokedex-entry */
+  margin-bottom: 20px;
+}
+
+.left-column img {
+  width: 50%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.entry-section[data-key^="Move"] {
+  font-size: 0.95em;
+  padding-left: 6px;
+}
+
+.level-box {
+  background: #ccc;
+  color: #111;
+  font-weight: bold;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+/* Base bubble style */
+.bubble.type {
+  padding: 6px 12px;
+  border-radius: 3px;
+  font-size: 0.95em;
+  font-weight: bold;
+  white-space: nowrap;
+  text-align: center;
+  color: white;
+}
+
+/* Type Colors */
+.type-normal   { background: #A8A77A; }
+.type-fighting { background: #C22E28; }
+.type-flying   { background: #A98FF3; }
+.type-poison   { background: #A33EA1; }
+.type-ground   { background: #E2BF65; color: black; }
+.type-rock     { background: #B6A136; color: black; }
+.type-bug      { background: #A6B91A; color: black; }
+.type-ghost    { background: #735797; }
+.type-steel    { background: #B7B7CE; color: black; }
+.type-fire     { background: #EE8130; }
+.type-water    { background: #6390F0; }
+.type-grass    { background: #7AC74C; color: black; }
+.type-electric { background: #F7D02C; color: black; }
+.type-psychic  { background: #F95587; }
+.type-ice      { background: #96D9D6; color: black; }
+.type-dragon   { background: #6F35FC; }
+.type-dark     { background: #705746; }
+.type-fairy    { background: #D685AD; }
+.type-shadow   { background: #4B0082; }
+.type-dash     { background: #999; } /* For "-" or empty slot */
+
+#dev-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #444;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  font-size: 18px;
+  border-radius: 2px;
+  cursor: pointer;
+  z-index: 999;
+}
+
+#dev-panel {
+  position: fixed;
+  bottom: 70px;
+  right: 20px;
+  background: white;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 220px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+#dev-panel input {
+  width: 100%;
+  padding: 4px;
+  font-size: 0.9em;
+}
+
+.dex-title {
+  margin-left: 30px;
+  margin-bottom: 20px;
+}
+
+.dex-title-wrapper {
+  display: flex;
+  align-items: center;
+  margin-left: 30px;
+  margin-bottom: 20px;
+}
+
+.capture-icon {
+  width: 32px;
+  height: 32px;
+}
+
+#filter-panel {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 20px auto;
+  max-width: 1200px;
+  justify-content: flex-start;
+}
+
+/* 🔍 Search + Filters Wrapper */
+#filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 30px auto;
+  max-width: 1000px;
+  padding: 10px;
+}
+
+/* 🔤 Search input */
+#search-input {
+  padding: 10px 16px;
+  font-size: 1rem;
+  border-radius: 2px;
+  border: none;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  min-width: 220px;
+}
+
+/* 🔘 Search button */
+#search-button {
+  padding: 10px 16px;
+  font-size: 1rem;
+  background: #444;
+  color: white;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#search-button:hover {
+  background: #222;
+}
+
+/* 🔽 Dropdown and checkbox */
+#type-select, #seen-toggle {
+  padding: 10px 12px;
+  font-size: 1rem;
+  border-radius: 2px;
+  background: #444;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+/* 📦 Checkbox label alignment */
+label[for="seen-toggle"] {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #444;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* 🌟 Custom checkbox container */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  user-select: none;
+  color: #444;
+}
+
+/* Hide default checkbox */
+.checkbox-container input[type="checkbox"] {
+  display: none;
+}
+
+/* Circle look */
+.checkbox-container .checkmark {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #ccc;
+  position: relative;
+  transition: background 0.2s;
+}
+
+/* Checkmark indicator */
+.checkbox-container .checkmark::after {
+  content: "";
+  position: absolute;
+  display: none;
+  top: 4px;
+  left: 6px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* When checked */
+.checkbox-container input:checked + .checkmark {
+  background-color: #444;
+}
+
+.checkbox-container input:checked + .checkmark::after {
+  display: block;
+}
+
+#main-title {
+  text-align: center;
+  font-size: 3rem;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  font-weight: 900;
+  color: #333;
+  font-family: 'Segoe UI', sans-serif;
+  letter-spacing: 1px;
+}
+
+#scroll-top-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 70px; /* 👈 Pushes it to the left of the dev button */
+  background: #444;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  font-size: 18px;
+  border-radius: 24px;
+  cursor: pointer;
+  z-index: 999;
+  transition: opacity 0.3s;
+  opacity: 1;
+}
+
+#scroll-top-btn:hover {
+  opacity: 1;
+}
+
+@keyframes bounce-rotate {
+  0%   { transform: rotate(0deg) translateY(0); }
+  10%  { transform: rotate(-10deg) translateY(-25px); }
+  20%  { transform: rotate(10deg) translateY(0); }
+  30%  { transform: rotate(-10deg) translateY(-20px); }
+  40%  { transform: rotate(10deg) translateY(0); }
+  50%  { transform: rotate(-8deg) translateY(-15px); }
+  60%  { transform: rotate(8deg) translateY(0); }
+  100% { transform: rotate(0deg) translateY(0); }
+}
+
+.pokemon-bounce {
+  animation: bounce-rotate 1.5s ease-in-out;
+}
+
+@keyframes hop-zoom {
+  0%   { transform: translateX(0) scale(1); }
+  10%  { transform: translateX(30px) scale(1); }
+  20%  { transform: translateX(60px) scale(1); }
+  40%  { transform: translateX(-40px) scale(1.1); }
+  60%  { transform: translateX(0) scale(1); }
+  100% { transform: translateX(0) scale(1); }
+}
+
+.pokemon-hop {
+  animation: hop-zoom 1.5s ease-in-out;
+}
+
+#nav-buttons {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.nav-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #EFF0EF; /* 👈 Add this line */
+  background-color: #444;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.nav-circle:hover {
+  background-color: #222;
+}
+
+@keyframes pokemon-dash {
+  0% {
+    transform: translateX(0) scaleX(1);
+  }
+  10% {
+    transform: translateX(-10px) scaleX(1);
+  }
+  20% {
+    transform: translateX(0) scaleX(1);
+  }
+  30% {
+    transform: translateX(-10px) scaleX(1);
+  }
+  40% {
+    transform: translateX(0) scaleX(-1); /* flip */
+  }
+  50% {
+    transform: translateX(10px) scaleX(-1);
+  }
+  60% {
+    transform: translateX(0) scaleX(-1);
+  }
+  70% {
+    transform: translateX(10px) scaleX(-1);
+  }
+  80% {
+    transform: translateX(0) scaleX(-1);
+  }
+  90% {
+    transform: translateX(0) scaleX(1); /* flip back */
+  }
+  100% {
+    transform: translateX(0) scaleX(1);
+  }
+}
+
+.pokemon-dash {
+  animation: pokemon-dash 1.5s ease-in-out;
+}
+
+@keyframes pokemon-triplehop {
+  0% {
+    transform: translate(0, 0);
+  }
+  15% {
+    transform: translate(0, -80px); /* Jump in place */
+  }
+  30% {
+    transform: translate(0, 0);     /* Land center */
+  }
+
+  45% {
+    transform: translate(-40px, -80px); /* Jump left */
+  }
+  60% {
+    transform: translate(-40px, 0);     /* Land left */
+  }
+
+  75% {
+    transform: translate(0, -80px); /* Jump right (back) */
+  }
+  90% {
+    transform: translate(0, 0);     /* Final landing */
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.pokemon-triplehop {
+  animation: pokemon-triplehop 1.4s ease-in-out;
+}
+
+#top-nav {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  background-color: #444;
+  padding: 12px 0;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.nav-link {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.nav-link:hover {
+  background-color: #666;
+}

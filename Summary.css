@@ -1,0 +1,565 @@
+/* General layout */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #fafafa;
+  color: #333;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Summary container */
+#summary-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+/* Tab bar at the top */
+#tab-bar {
+  display: flex;
+  background-color: #e0e0e0;
+  border-bottom: 1px solid #ccc;
+  padding: 4px;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+.tab {
+  padding: 8px 12px;
+  background-color: #d0d0d0;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  font-weight: bold;
+}
+
+.tab.active {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  color: #000;
+}
+
+/* Tab content area */
+#tab-content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  background-color: white;
+  border-top: none;
+  border: 1px solid #ccc;
+  border-radius: 0 0 6px 6px;
+}
+
+/* Optional: placeholder for now */
+.placeholder {
+  font-style: italic;
+  color: #666;
+  text-align: center;
+  margin-top: 40px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: 60px 60px 60px 60px;
+  gap: 8px;
+  align-items: center;
+}
+
+.stat-label {
+  font-weight: bold;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.hp-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.hp-bar {
+  width: 100%;
+  height: 16px;
+  background-color: #ddd;
+  border-radius: 8px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.hp-fill {
+  height: 100%;
+  background-color: #4caf50;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.moves-box {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* exactly 3 columns */
+  width: 100%;
+  box-sizing: border-box;
+  gap: 16px;
+}
+
+.move-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.move-wrapper input {
+  font-weight: bold;
+  padding: 4px;
+}
+
+.move-wrapper textarea {
+  background-color: #fff2e0; /* soft orange */
+  border: 1px solid #e0a050;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px;
+  font-size: 1rem;
+  resize: vertical;
+  border-radius: 2px;
+  resize: vertical;
+  min-height: 60px;
+  padding: 6px;
+}
+
+.summary-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.summary-image-wrapper {
+  background-color: #dcdcdc;
+  padding: 10px;
+  border-radius: 2px;
+}
+
+.summary-img {
+  width: 200px !important;
+  height: auto;
+  display: block;
+}
+
+.summary-info-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.summary-types {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.type-tag {
+  width: 80px; 
+  text-align: center;       /* Center the text inside */
+  display: inline-block;    /* Ensures width applies properly */
+  padding: 8px 20px;
+  border-radius: 2px;
+  font-weight: bold;
+  font-size: 14px;
+  color: white;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+}
+
+/* Example type colors */
+.type-normal { background-color: #A8A878; }
+.type-fire { background-color: #F08030; }
+.type-water { background-color: #6890F0; }
+.type-electric { background-color: #F8D030;}
+.type-grass { background-color: #78C850; }
+.type-ice { background-color: #98D8D8; }
+.type-fighting { background-color: #C03028; }
+.type-poison { background-color: #A040A0; }
+.type-ground { background-color: #E0C068; }
+.type-flying { background-color: #A890F0; }
+.type-psychic { background-color: #F85888; }
+.type-bug { background-color: #A8B820; }
+.type-rock { background-color: #B8A038; }
+.type-ghost { background-color: #705898; }
+.type-dragon { background-color: #7038F8; }
+.type-dark { background-color: #705848; }
+.type-steel { background-color: #B8B8D0; }
+.type-fairy { background-color: #EE99AC; }
+
+.inline-fields {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.inline-fields .field-wrapper {
+  flex: 1;
+}
+
+.ability-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.ability-col {
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stats-grid {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.stat-block {
+  background: #f4f4f4;
+  border-radius: 4px;
+  padding: 8px;
+  width: 120px;
+  text-align: center;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-block .stat-label {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+}
+
+.stat-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.stat-inputs input {
+  width: 40px;
+  text-align: center;
+  padding: 2px;
+  font-weight: bold;
+}
+
+.stat-result {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.5em;
+  color: white;
+  margin-top: 10px;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+}
+
+.stat-input-labels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  font-size: 0.75em;
+  color: black;
+  margin-bottom: 2px;
+  text-align: center;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+}
+
+.evasion-box {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.evasion-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 80px;
+}
+
+.evasion-block label {
+  font-size: 12px;
+  color: white;
+  margin-bottom: 4px;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+}
+
+.evasion-block .evasion-value {
+  font-weight: bold;
+  font-size: 16px;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+}
+
+.hp-and-stats-wrapper {
+  max-width: 50px; /* or whatever your stat row width is */
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hp-bar {
+  width: 100%;
+  height: 16px;
+  align-items: center;
+  background-color: #ddd;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.hp-fill {
+  height: 100%;
+  background-color: #4caf50;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.summary-section {
+  background-color: #444;
+  padding: 16px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border: 2px solid #333;
+  color: white;
+  box-sizing: border-box;
+}
+
+.stat-hp {
+  background-color: #e2c65c; /* Yellow */
+}
+
+.stat-atk {
+  background-color: #e25c5c; /* Red */
+}
+
+.stat-def {
+  background-color: #5b7fd8; /* Blue */
+}
+
+.stat-satk {
+  background-color: #5cd4e0; /* Turquoise */
+}
+
+.stat-sdef {
+  background-color: #e56aac; /* Pink */
+}
+
+.stat-spd {
+  background-color: #68c068; /* Green */
+}
+
+Add these new rules to your CSS file for the evasion blocks:
+
+.evasion-block {
+  border-radius: 2px;
+  padding: 8px;
+  color: white;
+  text-align: center;
+}
+
+/* Evasion Block Colors – place this at the END of your CSS */
+.evasion-block.spd {
+  background-color: #68c068 !important; /* Green */
+}
+
+.evasion-block.def {
+  background-color: #5b7fd8 !important; /* Blue */
+}
+
+.evasion-block.sdef {
+  background-color: #e56aac !important; /* Pink */
+}
+
+.move-wrapper input[type="text"] {
+  background-color: #ffc266; /* Faint orange */
+  border: 1px solid #e0a050;
+  border-radius: 2px;
+  padding: 4px;
+
+}
+
+/* Held Item */
+.ability-col.held input {
+  background-color: #dcdcdc;
+  border: 1px solid #dcdcdc;
+  border-radius: 2px;
+  padding: 4px;
+}
+.ability-col.held textarea {
+  background-color: white;
+  border: 1px solid #dcdcdc;
+  border-radius: 2px;
+  padding: 4px;
+}
+
+/* Basic Ability */
+.ability-col.basic input {
+  background-color: #fff176;
+  border: 1px solid #fff176;
+  border-radius: 2px;
+  padding: 4px;
+}
+.ability-col.basic textarea {
+  background-color: #fff8c6;
+  border: 1px solid #fff176;
+  border-radius: 2px;
+  padding: 4px;
+}
+
+/* Advanced Ability */
+.ability-col.advanced input {
+  background-color: #ffc266;
+  border: 1px solid #ffc266;
+  border-radius: 2px;
+  padding: 4px;
+}
+.ability-col.advanced textarea {
+  background-color: #fff2e0;
+  border: 1px solid #ffc266;
+  border-radius: 2px;
+  padding: 4px;
+}
+
+/* Hyper Ability */
+.ability-col.hyper input {
+  background-color: #f57c7c;
+  border: 1px solid #f57c7c;
+  border-radius: 2px;
+  padding: 4px;
+}
+.ability-col.hyper textarea {
+  background-color: #ffd6d6;
+  border: 1px solid #f57c7c;
+  border-radius: 2px;
+  padding: 4px;
+}
+
+.inline-fields input {
+  background-color: white;
+  border: 1px solid #dcdcdc;
+  border-radius: 2px;
+  padding: 4px;
+}
+
+.move-name-row {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.move-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 6px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  font-size: 1rem;
+}
+
+.move-tag {
+  width: 70px;
+  flex-shrink: 0;
+  padding: 6px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  font-size: 1rem;
+}
+
+.move-wrapper .move-name-row .move-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 6px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+.move-wrapper .move-name-row .move-tag {
+  width: 70px; /* now properly shrunk */
+  flex-shrink: 0;
+  padding: 6px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+.move-wrapper {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.move-wrapper,
+.move-name-row,
+.move-wrapper input,
+.move-wrapper textarea {
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.move-name-row {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.move-title {
+  flex: 1;
+  min-width: 0;
+  padding: 6px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+.move-meta {
+  width: 70px;
+  flex-shrink: 0;
+  padding: 6px;
+  font-size: 1rem;
+  border-radius: 2px;
+  box-sizing: border-box;
+  border: none !important;
+  text-align: center; /* ✅ center text */
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.2); /* ✅ subtle depth */
+  font-weight: bold;
+  color: white; /* default white in case colored background is applied early */
+}

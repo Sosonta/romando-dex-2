@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Romando Pokédex</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<nav id="top-nav">
+  <a href="index.html" class="nav-link">Pokédex</a>
+  <a href="map.html" class="nav-link">Map</a>
+  <a href="poke-id.html" class="nav-link">Poke-ID</a>
+    <a href="PC.html" class="nav-link">PC</a>
+    <a href="info.html" class="nav-link">Info</a>
+</nav>
+<label id="audio-toggle-wrapper" style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+  <input type="checkbox" id="audio-toggle" />
+  Pokemon Audio
+</label>
+<h1 id="main-title">Romandan Pokédex</h1>
+<div id="nav-buttons">
+  <button id="prev-button" class="nav-circle">&lt;</button>
+  <button id="next-button" class="nav-circle">&gt;</button>
+</div>
+<!-- 🔍 Filter Panel -->
+<div id="filter-bar">
+  <input id="search-input" list="pokedex-names" placeholder="Search Pokémon..." />
+  <datalist id="pokedex-names"></datalist>
+  <button id="search-button">Search</button>
+  <select id="type-select">
+    <option value="All">All Types</option>
+    <option value="Normal">Normal</option>
+    <option value="Fighting">Fighting</option>
+    <option value="Flying">Flying</option>
+    <option value="Poison">Poison</option>
+    <option value="Ground">Ground</option>
+    <option value="Rock">Rock</option>
+    <option value="Bug">Bug</option>
+    <option value="Ghost">Ghost</option>
+    <option value="Steel">Steel</option>
+    <option value="Fire">Fire</option>
+    <option value="Water">Water</option>
+    <option value="Grass">Grass</option>
+    <option value="Electric">Electric</option>
+    <option value="Psychic">Psychic</option>
+    <option value="Ice">Ice</option>
+    <option value="Dragon">Dragon</option>
+    <option value="Dark">Dark</option>
+    <option value="Fairy">Fairy</option>
+    <option value="Shadow">Shadow</option>
+    <option value="-">-</option>
+  </select>
+<label class="checkbox-container">
+  <input type="checkbox" id="seen-toggle" />
+  <span class="checkmark"></span>
+  Only Show Seen
+</label>
+</div>
+
+  <!-- Pokédex Entries -->
+<div id="pokedex-wrapper">
+  <h1 id="dex-title"></h1>
+  <div id="pokedex-scroll">
+    <div class="pokedex-entry" id="entry-001"></div>
+    <div class="pokedex-entry" id="entry-002"></div>
+    <div class="pokedex-entry" id="entry-003"></div>
+    <div class="pokedex-entry" id="entry-004"></div>
+    <div class="pokedex-entry" id="entry-005"></div>
+    <div class="pokedex-entry" id="entry-006"></div>
+    <div class="pokedex-entry" id="entry-007"></div>
+    <div class="pokedex-entry" id="entry-008"></div>
+    <div class="pokedex-entry" id="entry-009"></div>
+    <div class="pokedex-entry" id="entry-010"></div>
+    <div class="pokedex-entry" id="entry-011"></div>
+    <div class="pokedex-entry" id="entry-012"></div>
+    <div class="pokedex-entry" id="entry-013"></div>
+    <div class="pokedex-entry" id="entry-014"></div>
+    <div class="pokedex-entry" id="entry-015"></div>
+    <div class="pokedex-entry" id="entry-016"></div>
+    <div class="pokedex-entry" id="entry-017"></div>
+    <div class="pokedex-entry" id="entry-018"></div>
+    <div class="pokedex-entry" id="entry-019"></div>
+    <div class="pokedex-entry" id="entry-020"></div>
+    <div class="pokedex-entry" id="entry-021"></div>
+    <div class="pokedex-entry" id="entry-022"></div>
+    <div class="pokedex-entry" id="entry-023"></div>
+    <div class="pokedex-entry" id="entry-024"></div>
+    <div class="pokedex-entry" id="entry-025"></div>
+    <div class="pokedex-entry" id="entry-026"></div>
+    <div class="pokedex-entry" id="entry-027"></div>
+    <div class="pokedex-entry" id="entry-028"></div>
+    <div class="pokedex-entry" id="entry-029"></div>
+    <div class="pokedex-entry" id="entry-030"></div>
+    <div class="pokedex-entry" id="entry-031"></div>
+    <div class="pokedex-entry" id="entry-032"></div>
+    <div class="pokedex-entry" id="entry-033"></div>
+    <div class="pokedex-entry" id="entry-034"></div>
+    <div class="pokedex-entry" id="entry-035"></div>
+    <div class="pokedex-entry" id="entry-036"></div>
+    <div class="pokedex-entry" id="entry-037"></div>
+    <div class="pokedex-entry" id="entry-038"></div>
+    <div class="pokedex-entry" id="entry-039"></div>
+    <div class="pokedex-entry" id="entry-040"></div>
+    <div class="pokedex-entry" id="entry-041"></div>
+    <div class="pokedex-entry" id="entry-042"></div>
+    <div class="pokedex-entry" id="entry-043"></div>
+    <div class="pokedex-entry" id="entry-044"></div>
+    <div class="pokedex-entry" id="entry-045"></div>
+    <div class="pokedex-entry" id="entry-046"></div>
+    <div class="pokedex-entry" id="entry-047"></div>
+    <div class="pokedex-entry" id="entry-048"></div>
+    <div class="pokedex-entry" id="entry-049"></div>
+    <div class="pokedex-entry" id="entry-050"></div>
+    <div class="pokedex-entry" id="entry-051"></div>
+    <div class="pokedex-entry" id="entry-052"></div>
+    <div class="pokedex-entry" id="entry-053"></div>
+    <div class="pokedex-entry" id="entry-054"></div>
+    <div class="pokedex-entry" id="entry-055"></div>
+    <div class="pokedex-entry" id="entry-056"></div>
+    <div class="pokedex-entry" id="entry-057"></div>
+    <div class="pokedex-entry" id="entry-058"></div>
+    <div class="pokedex-entry" id="entry-059"></div>
+    <div class="pokedex-entry" id="entry-060"></div>
+    <div class="pokedex-entry" id="entry-061"></div>
+    <div class="pokedex-entry" id="entry-062"></div>
+    <div class="pokedex-entry" id="entry-063"></div>
+    <div class="pokedex-entry" id="entry-064"></div>
+    <div class="pokedex-entry" id="entry-065"></div>
+    <div class="pokedex-entry" id="entry-066"></div>
+    <div class="pokedex-entry" id="entry-067"></div>
+    <div class="pokedex-entry" id="entry-068"></div>
+    <div class="pokedex-entry" id="entry-069"></div>
+    <div class="pokedex-entry" id="entry-070"></div>
+    <div class="pokedex-entry" id="entry-071"></div>
+    <div class="pokedex-entry" id="entry-072"></div>
+    <div class="pokedex-entry" id="entry-073"></div>
+    <div class="pokedex-entry" id="entry-074"></div>
+    <div class="pokedex-entry" id="entry-075"></div>
+    <div class="pokedex-entry" id="entry-076"></div>
+    <div class="pokedex-entry" id="entry-077"></div>
+    <div class="pokedex-entry" id="entry-078"></div>
+    <div class="pokedex-entry" id="entry-079"></div>
+    <div class="pokedex-entry" id="entry-080"></div>
+    <div class="pokedex-entry" id="entry-081"></div>
+    <div class="pokedex-entry" id="entry-082"></div>
+    <div class="pokedex-entry" id="entry-083"></div>
+    <div class="pokedex-entry" id="entry-084"></div>
+    <div class="pokedex-entry" id="entry-085"></div>
+    <div class="pokedex-entry" id="entry-086"></div>
+    <div class="pokedex-entry" id="entry-087"></div>
+    <div class="pokedex-entry" id="entry-088"></div>
+    <div class="pokedex-entry" id="entry-089"></div>
+    <div class="pokedex-entry" id="entry-090"></div>
+    <div class="pokedex-entry" id="entry-091"></div>
+    <div class="pokedex-entry" id="entry-092"></div>
+    <div class="pokedex-entry" id="entry-093"></div>
+    <div class="pokedex-entry" id="entry-094"></div>
+    <div class="pokedex-entry" id="entry-095"></div>
+    <div class="pokedex-entry" id="entry-096"></div>
+    <div class="pokedex-entry" id="entry-097"></div>
+    <div class="pokedex-entry" id="entry-098"></div>
+    <div class="pokedex-entry" id="entry-099"></div>
+    <div class="pokedex-entry" id="entry-100"></div>
+    <div class="pokedex-entry" id="entry-101"></div>
+    <div class="pokedex-entry" id="entry-102"></div>
+    <div class="pokedex-entry" id="entry-103"></div>
+    <div class="pokedex-entry" id="entry-104"></div>
+    <div class="pokedex-entry" id="entry-105"></div>
+    <div class="pokedex-entry" id="entry-106"></div>
+    <div class="pokedex-entry" id="entry-107"></div>
+    <div class="pokedex-entry" id="entry-108"></div>
+    <div class="pokedex-entry" id="entry-109"></div>
+    <div class="pokedex-entry" id="entry-110"></div>
+    <div class="pokedex-entry" id="entry-111"></div>
+    <div class="pokedex-entry" id="entry-112"></div>
+    <div class="pokedex-entry" id="entry-113"></div>
+    <div class="pokedex-entry" id="entry-114"></div>
+    <div class="pokedex-entry" id="entry-115"></div>
+    <div class="pokedex-entry" id="entry-116"></div>
+    <div class="pokedex-entry" id="entry-117"></div>
+    <div class="pokedex-entry" id="entry-118"></div>
+    <div class="pokedex-entry" id="entry-119"></div>
+    <div class="pokedex-entry" id="entry-120"></div>
+    <div class="pokedex-entry" id="entry-121"></div>
+    <div class="pokedex-entry" id="entry-122"></div>
+    <div class="pokedex-entry" id="entry-123"></div>
+    <div class="pokedex-entry" id="entry-124"></div>
+    <div class="pokedex-entry" id="entry-125"></div>
+    <div class="pokedex-entry" id="entry-126"></div>
+    <div class="pokedex-entry" id="entry-127"></div>
+    <div class="pokedex-entry" id="entry-128"></div>
+    <div class="pokedex-entry" id="entry-129"></div>
+    <div class="pokedex-entry" id="entry-130"></div>
+    <div class="pokedex-entry" id="entry-131"></div>
+    <div class="pokedex-entry" id="entry-132"></div>
+    <div class="pokedex-entry" id="entry-133"></div>
+    <div class="pokedex-entry" id="entry-134"></div>
+    <div class="pokedex-entry" id="entry-135"></div>
+    <div class="pokedex-entry" id="entry-136"></div>
+    <div class="pokedex-entry" id="entry-137"></div>
+    <div class="pokedex-entry" id="entry-138"></div>
+    <div class="pokedex-entry" id="entry-139"></div>
+    <div class="pokedex-entry" id="entry-140"></div>
+    <div class="pokedex-entry" id="entry-141"></div>
+    <div class="pokedex-entry" id="entry-142"></div>
+    <div class="pokedex-entry" id="entry-143"></div>
+    <div class="pokedex-entry" id="entry-144"></div>
+    <div class="pokedex-entry" id="entry-145"></div>
+    <div class="pokedex-entry" id="entry-146"></div>
+    <div class="pokedex-entry" id="entry-147"></div>
+    <div class="pokedex-entry" id="entry-148"></div>
+    <div class="pokedex-entry" id="entry-149"></div>
+    <div class="pokedex-entry" id="entry-150"></div>
+    <div class="pokedex-entry" id="entry-151"></div>
+    <div class="pokedex-entry" id="entry-152"></div>
+    <div class="pokedex-entry" id="entry-153"></div>
+    <div class="pokedex-entry" id="entry-154"></div>
+    <div class="pokedex-entry" id="entry-155"></div>
+    <div class="pokedex-entry" id="entry-156"></div>
+    <div class="pokedex-entry" id="entry-157"></div>
+    <div class="pokedex-entry" id="entry-158"></div>
+    <div class="pokedex-entry" id="entry-159"></div>
+    <div class="pokedex-entry" id="entry-160"></div>
+    <div class="pokedex-entry" id="entry-161"></div>
+    <div class="pokedex-entry" id="entry-162"></div>
+    <div class="pokedex-entry" id="entry-163"></div>
+    <div class="pokedex-entry" id="entry-164"></div>
+    <div class="pokedex-entry" id="entry-165"></div>
+    <div class="pokedex-entry" id="entry-166"></div>
+    <div class="pokedex-entry" id="entry-167"></div>
+    <div class="pokedex-entry" id="entry-168"></div>
+    <div class="pokedex-entry" id="entry-169"></div>
+    <div class="pokedex-entry" id="entry-170"></div>
+    <div class="pokedex-entry" id="entry-171"></div>
+    <div class="pokedex-entry" id="entry-172"></div>
+  </div>
+</div>
+
+  <!-- Dev Menu -->
+  <button id="dev-toggle">+</button>
+  <div id="dev-panel" style="display: none;">
+    <label>From ID: <input id="from-id" placeholder="001 - Beaf" /></label>
+    <label>To ID: <input id="to-id" placeholder="002 - Spriggo" /></label>
+    <label>Name: <input id="new-name" placeholder="Spriggo" /></label>
+    <label>Dex #: <input id="new-dex" placeholder="002" /></label>
+    <button id="clone-btn">Clone Pokémon</button>
+  </div>
+<button id="scroll-top-btn">^</button>
+
+  <!-- Scripts -->
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="script.js"></script>
+</body>
+</html>
