@@ -72,15 +72,18 @@ function createTab(dex) {
   const tabId = `tab-${dex}`;
   const contentId = `summary-${dex}`;
 
-  // Create tab button
-  const tab = document.createElement("div");
-  tab.className = "tab";
-  tab.id = tabId;
+// Create tab button
+const tab = document.createElement("div");
+tab.className = "tab";
+tab.id = tabId;
 tab.textContent = ""; // Clear any existing content
 
 const nameSpan = document.createElement("span");
 nameSpan.textContent = `#${dex}`;
 tab.appendChild(nameSpan);
+
+// 🛠️ Fix: Enable clicking the tab to activate it
+tab.onclick = () => setActiveTab(dex);
 
 // Close button
 const closeBtn = document.createElement("span");
@@ -92,7 +95,7 @@ closeBtn.onclick = (e) => {
 };
 
 tab.appendChild(closeBtn);
-  tabBar.appendChild(tab);
+tabBar.appendChild(tab);
 
   // Create summary content block
   const content = document.createElement("div");
