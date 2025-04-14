@@ -404,7 +404,7 @@ if (action === "description") {
     p.style.background = "";
     p.style.padding = "";
     popup.style.display = ""; // back to hover mode
-    await updateDoc(doc(db, "mapMarkers", markerId), { description: p.textContent });
+    await updateDoc(doc(db, "mapMarkers", markerId), { description: p.innerText });
   };
 
   const handleClickOutside = (e) => {
@@ -566,4 +566,3 @@ setTimeout(() => {
   }, { once: true });
 }, 10);
 });
-
