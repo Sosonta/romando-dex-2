@@ -198,7 +198,7 @@ releaseBtn.addEventListener('click', async () => {
   console.log("➡️ Release button clicked");
   console.log("Right-clicked index:", rightClickedPokemonIndex);
 
-  if (rightClickedPokemonIndex === null || !currentUser) {
+  if (rightClickedPokemonIndex === null || !currentUser || !selectedPokemonForSummary) {
     console.warn("❌ No valid Pokémon selected or user not logged in");
     return;
   }
@@ -214,16 +214,27 @@ releaseBtn.addEventListener('click', async () => {
   const data = snap.data();
 
   const pcPokemon = data?.pcPokemon || [];
-  console.log("Before release:", [...pcPokemon]);
+  const teamPokemon = data?.teamPokemon || [];
 
-  // Use splice to remove the exact index
-  pcPokemon.splice(rightClickedPokemonIndex, 1);
-  console.log("After release:", [...pcPokemon]);
+  // Find Pokémon in both arrays
+  const pcIndex = pcPokemon.findIndex(p => p?.dex === selectedPokemonForSummary.dex);
+  const teamIndex = teamPokemon.findIndex(p => p?.dex === selectedPokemonForSummary.dex);
 
-  await updateDoc(docRef, { pcPokemon });
+  if (pcIndex !== -1) {
+    pcPokemon.splice(pcIndex, 1);
+    await updateDoc(docRef, { pcPokemon });
+    console.log("✅ Released from PC:", selectedPokemonForSummary.dex);
+  } else if (teamIndex !== -1) {
+    teamPokemon.splice(teamIndex, 1);
+    await updateDoc(docRef, { teamPokemon });
+    console.log("✅ Released from Team:", selectedPokemonForSummary.dex);
+  } else {
+    console.warn("❌ Pokémon not found in PC or Team.");
+  }
 
   contextMenu.classList.add('hidden');
   rightClickedPokemonIndex = null;
+  selectedPokemonForSummary = null;
   await renderPCGrid();
 });
 
