@@ -563,3 +563,9 @@ Add these new rules to your CSS file for the evasion blocks:
   font-weight: bold;
   color: white; /* default white in case colored background is applied early */
 }
+
+.summary-info-wrapper input {
+  padding: 4px;
+  font-size: 14px;
+  width: 120px;
+}

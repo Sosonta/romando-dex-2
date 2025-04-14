@@ -126,59 +126,71 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 // 🔍 Fetch Pokémon base info (name, type, etc.) and build layout
+// 🔍 Fetch Pokémon base info (name, type, etc.) and build layout
 async function populateSummary(dex, container) {
-
-let maxHP = 0;
-let currentHpInput = null;
-let barFill = null;
-let maxDisplay = null;
+  let maxHP = 0;
+  let currentHpInput = null;
+  let barFill = null;
+  let maxDisplay = null;
 
   const paddedDex = dex.toString().padStart(3, '0');
   const q = query(collection(db, "pokemon"), where("Dex Number", "==", dex));
   const querySnapshot = await getDocs(q);
 
-  if (querySnapshot.empty) {
-    container.textContent = `Pokémon #${dex} not found.`;
-    return;
-  }
+  let data = null;
+  let isNationalPokemon = false;
 
-  const data = querySnapshot.docs[0].data();
+if (!querySnapshot.empty) {
+  data = querySnapshot.docs[0].data();
+} else {
+  console.warn(`Pokémon #${dex} not found in Firebase. Checking if it's national.`);
+  isNationalPokemon = true;
+  data = {
+    Name: `National #${dex}`,
+    Types: [], // Can be editable
+  };
+}
 
   // Clear and build base content
   container.innerHTML = '';
 
-  const title = document.createElement('h2');
+let title = null;
+if (!isNationalPokemon) {
+  title = document.createElement('h2');
   title.textContent = data.Name || `#${dex}`;
+}
 
   const image = document.createElement('img');
-  image.src = `pokemon-images/${paddedDex}.png`;
+  image.src = isNationalPokemon
+  ? `national-pokemon/${dex}.png`
+  : `pokemon-images/${paddedDex}.png`;
   image.alt = `Pokémon ${data.Name}`;
   image.className = 'summary-img';
 
-const typeBox = document.createElement('div');
-typeBox.className = 'summary-types';
-(data.Types || []).forEach(type => {
-  const span = document.createElement('span');
-  span.textContent = type;
-  span.className = `type-tag type-${type.toLowerCase()}`;
-  typeBox.appendChild(span);
-});
+  const typeBox = document.createElement('div');
+  typeBox.className = 'summary-types';
+  (data.Types || []).forEach(type => {
+    const span = document.createElement('span');
+    span.textContent = type;
+    span.className = `type-tag type-${type.toLowerCase()}`;
+    typeBox.appendChild(span);
+  });
 
-const headerBox = document.createElement('div');
-headerBox.className = 'summary-header';
+  const headerBox = document.createElement('div');
+  headerBox.className = 'summary-header';
 
-const imageWrapper = document.createElement('div');
-imageWrapper.className = 'summary-image-wrapper';
-imageWrapper.appendChild(image);
+  const imageWrapper = document.createElement('div');
+  imageWrapper.className = 'summary-image-wrapper';
+  imageWrapper.appendChild(image);
 
-const infoWrapper = document.createElement('div');
-infoWrapper.className = 'summary-info-wrapper';
-infoWrapper.appendChild(title);
-infoWrapper.appendChild(typeBox);
+  const infoWrapper = document.createElement('div');
+  infoWrapper.className = 'summary-info-wrapper';
+if (title) infoWrapper.appendChild(title);
+  infoWrapper.appendChild(typeBox);
 
-headerBox.appendChild(imageWrapper);
-headerBox.appendChild(infoWrapper);
-container.appendChild(headerBox);
+  headerBox.appendChild(imageWrapper);
+  headerBox.appendChild(infoWrapper);
+  container.appendChild(headerBox);
 
   // 🔍 Fetch user's data for this Pokémon
   const userDocRef = doc(db, "pokeIDs", currentUser.uid);
@@ -200,6 +212,98 @@ if (!target) {
   err.textContent = `Pokémon #${dex} not found in your PC or Team.`;
   container.appendChild(err);
   return;
+}
+
+if (isNationalPokemon) {
+  const nationalBox = document.createElement('div');
+  nationalBox.style.display = 'flex';
+  nationalBox.style.flexDirection = 'column';
+  nationalBox.style.gap = '6px';
+  nationalBox.style.marginTop = '6px';
+
+  // Species (top input)
+  const speciesInput = document.createElement('input');
+  speciesInput.type = 'text';
+  speciesInput.placeholder = 'Species';
+  speciesInput.value = target?.species || '';
+  speciesInput.onchange = async (e) => {
+    await updateField("species", e.target.value);
+  };
+  nationalBox.appendChild(speciesInput);
+
+Object.assign(speciesInput.style, {
+  fontSize: '1.5rem',
+  fontWeight: '600',
+  fontFamily: 'Arial, sans-serif',
+  color: '#333',
+  border: 'none',
+  outline: 'none',
+  background: 'transparent',
+  padding: '0',
+  marginBottom: '24px',
+  textAlign: 'left',
+  textShadow: 'none'
+});
+
+  // Types (side-by-side row)
+  const typeRow = document.createElement('div');
+  typeRow.style.display = 'flex';
+  typeRow.style.gap = '6px';
+
+function applyTypeColor(inputEl) {
+  const val = inputEl.value.trim().toLowerCase();
+  if (typeColors[val]) {
+    inputEl.style.backgroundColor = typeColors[val];
+    inputEl.style.color = 'white';
+  } else {
+    inputEl.style.backgroundColor = '';
+    inputEl.style.color = '';
+  }
+}
+
+const type1Input = document.createElement('input');
+type1Input.type = 'text';
+type1Input.placeholder = 'Type 1';
+type1Input.value = target?.type1 || '';
+applyTypeColor(type1Input); // Set initial color
+type1Input.onchange = async (e) => {
+  const val = e.target.value;
+  applyTypeColor(type1Input);
+  await updateField("type1", val);
+};
+
+const type2Input = document.createElement('input');
+type2Input.type = 'text';
+type2Input.placeholder = 'Type 2';
+type2Input.value = target?.type2 || '';
+applyTypeColor(type2Input); // Set initial color
+type2Input.onchange = async (e) => {
+  const val = e.target.value;
+  applyTypeColor(type2Input);
+  await updateField("type2", val);
+};
+
+typeRow.appendChild(type1Input);
+typeRow.appendChild(type2Input);
+
+const sharedTypeStyle = {
+  padding: '8px',
+  fontSize: '0.9rem',
+  borderRadius: '2px',
+  boxSizing: 'border-box',
+  fontFamily: 'Arial, sans-serif',
+  border: 'none',
+  textAlign: 'center',
+  textShadow: '1px 1px 1px rgba(0,0,0,0.2)',
+  fontWeight: 'bold',
+  color: 'white'
+};
+Object.assign(type1Input.style, sharedTypeStyle);
+Object.assign(type2Input.style, sharedTypeStyle);
+
+  // Append both to infoWrapper
+  nationalBox.appendChild(typeRow);
+  infoWrapper.appendChild(nationalBox);
 }
 
 // 🏷️ Update tab label to saved name if available

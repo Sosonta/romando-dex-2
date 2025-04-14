@@ -121,9 +121,16 @@ function createSlot(poke, location, index) {
 
   if (poke) {
     const img = document.createElement('img');
-    img.src = `pokemon-images/${poke.dex.toString().padStart(3, '0')}.png`;
-    img.alt = `Dex ${poke.dex}`;
+const dexStr = poke.dex.toString();
+const isNational = poke.national === true;
+
+img.src = isNational
+  ? `national-pokemon/${dexStr}.png`
+  : `pokemon-images/${dexStr.padStart(3, '0')}.png`;
+
+    img.alt = `Dex ${dexStr}`;
     slot.appendChild(img);
+console.log("Rendering slot:", poke);
   }
 
   slot.draggable = true;
@@ -273,8 +280,9 @@ function stopAutoScroll() {
 }
 
 async function renderModalOptions() {
-  modalGrid.innerHTML = ''; // Clear first
+  modalGrid.innerHTML = ''; // Clear existing content
 
+  // Add blank slot
   const blankImg = document.createElement('img');
   blankImg.src = 'pokemon-images/blank_pokemon.png';
   blankImg.className = 'modal-pokemon';
@@ -282,9 +290,9 @@ async function renderModalOptions() {
   blankImg.onclick = () => addPokemonToPC('blank');
   modalGrid.appendChild(blankImg);
 
+  // Fetch revealed Pokémon from Firebase
   const pokemonRef = collection(db, "pokemon");
   const querySnapshot = await getDocs(pokemonRef);
-
   querySnapshot.forEach((docSnap) => {
     const data = docSnap.data();
     const dexNum = data["Dex Number"];
@@ -299,6 +307,21 @@ async function renderModalOptions() {
       modalGrid.appendChild(img);
     }
   });
+
+  // Fetch national Pokémon images from 'national-pokemon' folder
+  const nationalPokemonImages = await fetch('national-pokemon/index.json')
+    .then(response => response.json())
+    .catch(() => []);
+
+  nationalPokemonImages.forEach((filename) => {
+    const dexNum = filename.replace('.png', '');
+    const img = document.createElement('img');
+    img.src = `national-pokemon/${filename}`;
+    img.className = 'modal-pokemon';
+    img.alt = `Dex ${dexNum}`;
+ img.onclick = () => addPokemonToPC(dexNum.replace('.png', ''));
+    modalGrid.appendChild(img);
+  });
 }
 
 async function addPokemonToPC(dexNum) {
@@ -310,11 +333,19 @@ async function addPokemonToPC(dexNum) {
 
   const currentPC = data?.pcPokemon || [];
 
-  if (dexNum === 'blank') {
-    currentPC.push(null);
-  } else {
-    currentPC.push({ dex: dexNum, nickname: '', notes: '' });
-  }
+if (dexNum === 'blank') {
+  currentPC.push(null);
+} else {
+const isNational = Number(dexNum) >= 500; // or whatever your national range starts at
+currentPC.push({
+  dex: dexNum,
+  name: '',
+  type1: '',
+  type2: '',
+  notes: '',
+  national: true
+});
+}
 
   await updateDoc(docRef, { pcPokemon: currentPC });
   modal.classList.add('hidden');
