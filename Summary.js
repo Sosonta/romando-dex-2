@@ -60,13 +60,15 @@ window.addEventListener("message", (event) => {
 
   const dex = data.dex;
   if (openTabs.has(dex)) {
-    // Switch to already-open tab
     setActiveTab(dex);
     return;
   }
 
   createTab(dex);
 });
+
+// ✅ Tell the opener you're ready
+window.opener?.postMessage({ type: "SUMMARY_READY" }, "*");
 
 function createTab(dex) {
   const tabId = `tab-${dex}`;
@@ -119,100 +121,148 @@ function setActiveTab(dex) {
 
 let currentUser = null;
 
+let authIsReady = false;
+
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     currentUser = user;
+    authIsReady = true;
+    console.log("✅ Firebase Auth ready:", currentUser.uid);
+  } else {
+    console.warn("❌ User not logged in");
   }
 });
 
-// 🔍 Fetch Pokémon base info (name, type, etc.) and build layout
+async function updateField(field, value, dex) {
+  if (!currentUser) {
+    console.error("❌ Cannot save — currentUser is null");
+    return;
+  }
+
+  const userDocRef = doc(db, "pokeIDs", currentUser.uid);
+  const snap = await getDoc(userDocRef);
+  const data = snap.data();
+  const pc = data?.pcPokemon || [];
+  const team = data?.teamPokemon || [];
+
+  let index = pc.findIndex(p => p?.dex === dex);
+  let targetList = "pcPokemon";
+
+  if (index === -1) {
+    index = team.findIndex(p => p?.dex === dex);
+    if (index !== -1) {
+      targetList = "teamPokemon";
+    } else {
+      console.warn(`❌ Pokémon #${dex} not found in PC or Team`);
+      return;
+    }
+  }
+
+  const updatedList = targetList === "pcPokemon" ? [...pc] : [...team];
+
+  updatedList[index] = {
+    ...updatedList[index],
+    [field]: value
+  };
+
+  await updateDoc(userDocRef, {
+    [targetList]: updatedList
+  });
+}
+
 // 🔍 Fetch Pokémon base info (name, type, etc.) and build layout
 async function populateSummary(dex, container) {
+// Wait until Firebase Auth is ready
+while (!authIsReady) {
+  console.log("⏳ Waiting for Firebase Auth...");
+  await new Promise(resolve => setTimeout(resolve, 100));
+}
   let maxHP = 0;
   let currentHpInput = null;
   let barFill = null;
   let maxDisplay = null;
 
   const paddedDex = dex.toString().padStart(3, '0');
-  const q = query(collection(db, "pokemon"), where("Dex Number", "==", dex));
-  const querySnapshot = await getDocs(q);
-
   let data = null;
   let isNationalPokemon = false;
 
-if (!querySnapshot.empty) {
-  data = querySnapshot.docs[0].data();
-} else {
-  console.warn(`Pokémon #${dex} not found in Firebase. Checking if it's national.`);
-  isNationalPokemon = true;
-  data = {
-    Name: `National #${dex}`,
-    Types: [], // Can be editable
-  };
-}
+  try {
+    const q = query(collection(db, "pokemon"), where("Dex Number", "==", dex));
+    const querySnapshot = await getDocs(q);
 
-  // Clear and build base content
-  container.innerHTML = '';
+    if (!querySnapshot.empty) {
+      data = querySnapshot.docs[0].data();
+    } else {
+      console.warn(`Pokémon #${dex} not found in Firebase. Treating as national.`);
+      isNationalPokemon = true;
+      data = {
+        Name: `National #${dex}`,
+        Types: [],
+      };
+    }
 
-let title = null;
-if (!isNationalPokemon) {
-  title = document.createElement('h2');
-  title.textContent = data.Name || `#${dex}`;
-}
+    // Clear and build base content
+    container.innerHTML = '';
 
-  const image = document.createElement('img');
-  image.src = isNationalPokemon
-  ? `national-pokemon/${dex}.png`
-  : `pokemon-images/${paddedDex}.png`;
-  image.alt = `Pokémon ${data.Name}`;
-  image.className = 'summary-img';
+    let title = null;
+    if (!isNationalPokemon) {
+      title = document.createElement('h2');
+      title.textContent = data.Name || `#${dex}`;
+    }
 
-  const typeBox = document.createElement('div');
-  typeBox.className = 'summary-types';
-  (data.Types || []).forEach(type => {
-    const span = document.createElement('span');
-    span.textContent = type;
-    span.className = `type-tag type-${type.toLowerCase()}`;
-    typeBox.appendChild(span);
-  });
+    const image = document.createElement('img');
+    image.src = isNationalPokemon
+      ? `national-pokemon/${dex}.png`
+      : `pokemon-images/${paddedDex}.png`;
+    image.alt = `Pokémon ${data.Name}`;
+    image.className = 'summary-img';
 
-  const headerBox = document.createElement('div');
-  headerBox.className = 'summary-header';
+    const typeBox = document.createElement('div');
+    typeBox.className = 'summary-types';
+    (data.Types || []).forEach(type => {
+      const span = document.createElement('span');
+      span.textContent = type;
+      span.className = `type-tag type-${type.toLowerCase()}`;
+      typeBox.appendChild(span);
+    });
 
-  const imageWrapper = document.createElement('div');
-  imageWrapper.className = 'summary-image-wrapper';
-  imageWrapper.appendChild(image);
+    const headerBox = document.createElement('div');
+    headerBox.className = 'summary-header';
 
-  const infoWrapper = document.createElement('div');
-  infoWrapper.className = 'summary-info-wrapper';
-if (title) infoWrapper.appendChild(title);
-  infoWrapper.appendChild(typeBox);
+    const imageWrapper = document.createElement('div');
+    imageWrapper.className = 'summary-image-wrapper';
+    imageWrapper.appendChild(image);
 
-  headerBox.appendChild(imageWrapper);
-  headerBox.appendChild(infoWrapper);
-  container.appendChild(headerBox);
+    const infoWrapper = document.createElement('div');
+    infoWrapper.className = 'summary-info-wrapper';
+    if (title) infoWrapper.appendChild(title);
+    infoWrapper.appendChild(typeBox);
 
-  // 🔍 Fetch user's data for this Pokémon
-  const userDocRef = doc(db, "pokeIDs", currentUser.uid);
-  const userSnap = await getDoc(userDocRef);
-  const userData = userSnap.data();
-const userPC = userData?.pcPokemon || [];
-const userTeam = userData?.teamPokemon || [];
+    headerBox.appendChild(imageWrapper);
+    headerBox.appendChild(infoWrapper);
+    container.appendChild(headerBox);
 
-let target = userPC.find(p => p?.dex === dex);
-let isFromTeam = false;
+    // Fetch user's data for this Pokémon
+    const userDocRef = doc(db, "pokeIDs", currentUser.uid);
+    const userSnap = await getDoc(userDocRef);
+    const userData = userSnap.data();
+    const userPC = userData?.pcPokemon || [];
+    const userTeam = userData?.teamPokemon || [];
 
-if (!target) {
-  target = userTeam.find(p => p?.dex === dex);
-  if (target) isFromTeam = true;
-}
+    let target = userPC.find(p => p?.dex === dex);
+    let isFromTeam = false;
 
-if (!target) {
-  const err = document.createElement('p');
-  err.textContent = `Pokémon #${dex} not found in your PC or Team.`;
-  container.appendChild(err);
-  return;
-}
+    if (!target) {
+      target = userTeam.find(p => p?.dex === dex);
+      if (target) isFromTeam = true;
+    }
+
+    if (!target) {
+      const err = document.createElement('p');
+      err.textContent = `Pokémon #${dex} not found in your PC or Team.`;
+      container.appendChild(err);
+      return;
+    }
 
 if (isNationalPokemon) {
   const nationalBox = document.createElement('div');
@@ -227,7 +277,7 @@ if (isNationalPokemon) {
   speciesInput.placeholder = 'Species';
   speciesInput.value = target?.species || '';
   speciesInput.onchange = async (e) => {
-    await updateField("species", e.target.value);
+  await updateField("species", e.target.value, dex);
   };
   nationalBox.appendChild(speciesInput);
 
@@ -269,7 +319,7 @@ applyTypeColor(type1Input); // Set initial color
 type1Input.onchange = async (e) => {
   const val = e.target.value;
   applyTypeColor(type1Input);
-  await updateField("type1", val);
+  await updateField("type1", val, dex);
 };
 
 const type2Input = document.createElement('input');
@@ -280,7 +330,7 @@ applyTypeColor(type2Input); // Set initial color
 type2Input.onchange = async (e) => {
   const val = e.target.value;
   applyTypeColor(type2Input);
-  await updateField("type2", val);
+  await updateField("type2", val, dex);
 };
 
 typeRow.appendChild(type1Input);
@@ -379,7 +429,7 @@ basicRow.className = 'inline-fields';
 
 basicRow.appendChild(
   labeledInput("Name", target.name || '', (val) => {
-    updateField("name", val);
+    updateField("name", val, dex);
     const tabInfo = openTabs.get(dex);
     if (tabInfo) {
       tabInfo.tabEl.childNodes[0].textContent = val || `#${dex}`; // updates the visible label part
@@ -389,15 +439,15 @@ basicRow.appendChild(
 basicRow.appendChild(
   labeledInput("Level", target.level || 1, (val) => {
     target.level = Number(val);
-    updateField("level", target.level);
+    updateField("level", target.level, dex);
     updateHPBar();
   }, false, true)
 );
 basicRow.appendChild(
-  labeledInput("Exp", target.exp || 0, (val) => updateField("exp", Number(val)), false, true)
+  labeledInput("Exp", target.exp || 0, (val) => updateField("exp", Number(val), dex), false, true)
 );
 basicRow.appendChild(
-  labeledInput("Nature", target.nature || '', (val) => updateField("nature", val), false, true)
+  labeledInput("Nature", target.nature || '', (val) => updateField("nature", val, dex), false, true)
 );
 
 const basicRowSection = document.createElement('div');
@@ -413,8 +463,8 @@ abilityRow.appendChild(
     "Held Item",
     target.heldItem || '',
     target.heldItemDesc || '',
-    (val) => updateField("heldItem", val),
-    (val) => updateField("heldItemDesc", val),
+    (val) => updateField("heldItem", val, dex),
+    (val) => updateField("heldItemDesc", val, dex),
     'held' // ✨ extra class
 )
 );
@@ -424,8 +474,8 @@ abilityRow.appendChild(
     "Basic Ability",
     target.basicAbility || '',
     target.basicAbilityDesc || '',
-    (val) => updateField("basicAbility", val),
-    (val) => updateField("basicAbilityDesc", val),
+    (val) => updateField("basicAbility", val, dex),
+    (val) => updateField("basicAbilityDesc", val, dex),
     'basic' // ✨ extra class
 )
 );
@@ -435,8 +485,8 @@ abilityRow.appendChild(
     "Advanced Ability",
     target.advancedAbility || '',
     target.advancedAbilityDesc || '',
-    (val) => updateField("advancedAbility", val),
-    (val) => updateField("advancedAbilityDesc", val),
+    (val) => updateField("advancedAbility", val, dex),
+    (val) => updateField("advancedAbilityDesc", val, dex),
     'advanced' // ✨ extra class
 )
 );
@@ -446,8 +496,8 @@ abilityRow.appendChild(
     "Hyper Ability",
     target.hyperAbility || '',
     target.hyperAbilityDesc || '',
-    (val) => updateField("hyperAbility", val),
-    (val) => updateField("hyperAbilityDesc", val),
+    (val) => updateField("hyperAbility", val, dex),
+    (val) => updateField("hyperAbilityDesc", val, dex),
     'hyper' // ✨ extra class
 )
 );
@@ -524,19 +574,41 @@ block.className = `stat-block stat-${statKey}`;
 }
 
 async function saveStatBlock() {
+  if (!currentUser) {
+    console.error("❌ Cannot save stats — currentUser is null");
+    return;
+  }
+
+  const userDocRef = doc(db, "pokeIDs", currentUser.uid);
   const snap = await getDoc(userDocRef);
   const data = snap.data();
   const pc = data?.pcPokemon || [];
-  const index = pc.findIndex(p => p?.dex === dex);
-  if (index === -1) return;
+  const team = data?.teamPokemon || [];
 
-  pc[index] = {
-    ...pc[index],
+  let index = pc.findIndex(p => p?.dex === dex);
+  let targetList = "pcPokemon";
+
+  if (index === -1) {
+    index = team.findIndex(p => p?.dex === dex);
+    if (index !== -1) {
+      targetList = "teamPokemon";
+    } else {
+      console.warn(`❌ Pokémon #${dex} not found in PC or Team`);
+      return;
+    }
+  }
+
+  const updatedList = targetList === "pcPokemon" ? [...pc] : [...team];
+
+  updatedList[index] = {
+    ...updatedList[index],
     baseStats,
     lvStats
   };
 
-  await updateDoc(userDocRef, { pcPokemon: pc });
+  await updateDoc(userDocRef, {
+    [targetList]: updatedList
+  });
 }
 
 statLabels.forEach(stat => {
@@ -682,18 +754,40 @@ container.appendChild(infoBox);
 
 // Save moves to Firestore
 async function saveMoves() {
+  if (!currentUser) {
+    console.error("❌ Cannot save moves — currentUser is null");
+    return;
+  }
+
+  const userDocRef = doc(db, "pokeIDs", currentUser.uid);
   const snap = await getDoc(userDocRef);
   const data = snap.data();
   const pc = data?.pcPokemon || [];
-  const index = pc.findIndex(p => p?.dex === dex);
-  if (index === -1) return;
+  const team = data?.teamPokemon || [];
 
-  pc[index] = {
-    ...pc[index],
+  let index = pc.findIndex(p => p?.dex === dex);
+  let targetList = "pcPokemon";
+
+  if (index === -1) {
+    index = team.findIndex(p => p?.dex === dex);
+    if (index !== -1) {
+      targetList = "teamPokemon";
+    } else {
+      console.warn(`❌ Pokémon #${dex} not found in PC or Team`);
+      return;
+    }
+  }
+
+  const updatedList = targetList === "pcPokemon" ? [...pc] : [...team];
+
+  updatedList[index] = {
+    ...updatedList[index],
     moves
   };
 
-  await updateDoc(userDocRef, { pcPokemon: pc });
+  await updateDoc(userDocRef, {
+    [targetList]: updatedList
+  });
 }
 
 // 🧪 HP Section
@@ -722,7 +816,7 @@ function renderHPSection(target) {
 
   currentHpInput.onchange = async (e) => {
     const val = Number(e.target.value);
-    await updateField("currentHP", val);
+    await updateField("currentHP", val, dex);
     updateHPBar();
   };
 
@@ -737,20 +831,12 @@ infoBox.appendChild(hpSection);
   updateHPBar(); // Initial render
 }
 
-  async function updateField(field, value) {
-    const snap = await getDoc(userDocRef);
-    const data = snap.data();
-    const pc = data?.pcPokemon || [];
-    const index = pc.findIndex(p => p?.dex === dex);
-    if (index === -1) return;
-
-    pc[index] = {
-      ...pc[index],
-      [field]: value
-    };
-
-    await updateDoc(userDocRef, { pcPokemon: pc });
-  }
+} catch (error) {
+  console.error("❌ Error populating summary:", error);
+  const err = document.createElement('p');
+  err.textContent = `An error occurred while loading the summary for Pokémon #${dex}.`;
+  container.appendChild(err);
+}
 }
 
 function closeTab(dex) {
