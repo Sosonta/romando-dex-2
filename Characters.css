@@ -1,0 +1,236 @@
+body {
+  background-color: #111;
+  color: white;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 1rem;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.section {
+  margin-bottom: 2rem;
+  background-color: #222;
+  padding: 1rem;
+  border-radius: 2px;
+}
+
+.section h2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.add-btn {
+  background-color: #666;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 2px;
+  font-weight: bold;
+}
+
+.add-btn:hover {
+  background-color: #444;
+}
+
+.character-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.character-card {
+  background-color: #333;
+  border: 1px solid #555;
+  padding: 1rem;
+  width: 220px;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+
+.character-card input,
+.character-card textarea {
+  width: 100%;
+  padding: 6px;
+  background-color: #222;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 2px;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+.character-card textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.card-controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.card-controls button {
+  background-color: #666;
+  color: white;
+  border: none;
+  padding: 4px;
+  flex: 1;
+  cursor: pointer;
+  border-radius: 2px;
+  font-size: 0.8rem;
+}
+
+.card-controls button:hover {
+  background-color: #444;
+}
+
+.char-block {
+  background: #222;
+  border: 1px solid #555;
+  border-radius: 2px;
+  padding: 10px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column; /* 🔥 Stack children vertically */
+  gap: 6px; /* 🔥 Small vertical spacing between inputs */
+  width: 300px; /* Optional: Fixed width for clean look */
+}
+
+.char-block input,
+.char-block textarea {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #444;
+  border-radius: 2px;
+  background-color: #1a1a1a;
+  color: white;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.char-block textarea {
+  resize: vertical;
+  min-height: 60px;
+  max-height: 200px;
+}
+
+.char-controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.char-controls button {
+  background-color: #666;
+  color: white;
+  border: none;
+  border-radius: 2px;
+  padding: 4px 6px;
+  cursor: pointer;
+  flex: 1;
+  transition: background-color 0.2s ease;
+}
+
+.char-controls button:hover {
+  background-color: #444;
+}
+
+.character-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  justify-content: center;
+  padding: 16px 0;
+}
+
+/* Page background using the uploaded color */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f2f3f2; /* Extracted from uploaded image */
+  color: #000;
+}
+
+/* Page title */
+h1 {
+  text-align: center;
+  font-size: 2.5rem;
+  color: black;
+  margin-top: 20px;
+}
+
+/* Section box */
+.section {
+  background-color: white;
+  margin: 40px auto;
+  padding: 16px;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  width: 90%;
+}
+
+/* Section titles */
+.section h2 {
+  color: black;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0;
+}
+
+/* Character block input styling */
+.char-block input,
+.char-block textarea {
+  background-color: white;
+  color: black;
+  border: 1px solid #ccc;
+}
+
+/* Top navigation bar */
+#top-nav {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  background-color: #444;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Navigation links */
+.nav-link {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.nav-link:hover {
+  background-color: #666;
+}
+
+body {
+  margin: 0;
+  padding: 28px;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f8f8f8; /* or your updated background */
+}
