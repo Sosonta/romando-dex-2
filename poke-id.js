@@ -255,6 +255,84 @@ function createInventoryItem(name = '', quantity = 1, column = 0) {
   grid.appendChild(card);
 }
 
+// ✅ Notes logic starts here
+const notesGrid = document.getElementById('notes-grid');
+const addNoteBtn = document.getElementById('add-note-btn');
+
+function createNoteCard(title = '', body = '') {
+  const card = document.createElement('div');
+  card.className = 'note-card';
+
+  const titleInput = document.createElement('input');
+  titleInput.className = 'note-title';
+  titleInput.value = title;
+  titleInput.placeholder = 'Note Title';
+
+  const bodyTextarea = document.createElement('textarea');
+  bodyTextarea.className = 'note-body';
+  bodyTextarea.value = body;
+  bodyTextarea.placeholder = 'Write your note here...';
+  bodyTextarea.style.resize = 'none';
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.textContent = '✖';
+  deleteBtn.className = 'delete-note-btn';
+  deleteBtn.onclick = () => {
+    if (confirm('Are you sure you want to delete this note?')) {
+      card.remove();
+      saveNotesToFirestore();
+    }
+  };
+
+  titleInput.addEventListener('input', saveNotesToFirestore);
+  bodyTextarea.addEventListener('input', saveNotesToFirestore);
+
+  card.appendChild(deleteBtn);
+  card.appendChild(titleInput);
+  card.appendChild(bodyTextarea);
+  notesGrid.appendChild(card);
+}
+
+addNoteBtn.addEventListener('click', () => {
+  createNoteCard();
+  saveNotesToFirestore();
+});
+
+async function loadNotes() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const docRef = doc(db, "pokeIDs", user.uid);
+  const snap = await getDoc(docRef);
+  const data = snap.data();
+
+  const notes = data?.character?.notes || [];
+  
+  // Clear old notes first
+  notesGrid.innerHTML = '';
+
+  notes.forEach(note => createNoteCard(note.title, note.body));
+}
+
+async function saveNotesToFirestore() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const noteCards = document.querySelectorAll('.note-card');
+  const notes = Array.from(noteCards).map(card => ({
+    title: card.querySelector('.note-title').value,
+    body: card.querySelector('.note-body').value
+  }));
+
+  const docRef = doc(db, "pokeIDs", user.uid);
+  await updateDoc(docRef, {
+    "character.notes": notes
+  });
+}
+
+// ✅ Immediately load them
+await loadNotes();
+
 async function loadInventory() {
   const user = auth.currentUser;
   if (!user) return;

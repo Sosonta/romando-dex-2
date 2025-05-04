@@ -26,6 +26,18 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const statusEffects = {
+  "Burned": "Take a tick of damage at the end of your turn. DEF stat is lowered 2 stages.",
+  "Frozen": "Cannot use moves or shift. You may use your action to roll DC16 to unfreeze. If hit by damaging Rock, Steel, Fighting, or Fire, unfreeze.",
+  "Paralyzed": "At the start of your turn roll a DC6. On fail, you cannot take actions.",
+  "Poisoned": "Take a tick of damage at end of turn. SDEF lowered 2 stages.",
+  "Badly Poisoned": "Take 5 damage at end of your turn. This value doubles each turn.",
+  "Asleep": "Can't take actions. Roll a DC16 at the start of each turn to wake up. DC lowers by 2 each fail. Wake up on taking damage.",
+  "Confused": "Roll 1d20 at the start of each turn: (1–10) = take a tick of damage, (11–16) = act normally, (17+) = cured.",
+  "Bad Sleep": "Take damage equal to 1/4 current HP at the start of your turn.",
+  "None": ""
+};
+
 const typeColors = {
   normal: '#A8A878',
   fire: '#F08030',
@@ -44,6 +56,7 @@ const typeColors = {
   dragon: '#7038F8',
   dark: '#705848',
   steel: '#B8B8D0',
+  shadow: '#5A4B7F',
   fairy: '#EE99AC'
 };
 
@@ -273,6 +286,7 @@ if (isNationalPokemon) {
 
   // Species (top input)
   const speciesInput = document.createElement('input');
+  speciesInput.classList.add('species-input');
   speciesInput.type = 'text';
   speciesInput.placeholder = 'Species';
   speciesInput.value = target?.species || '';
@@ -397,6 +411,7 @@ wrapper.className = `ability-col ${extraClass}`;
   return wrapper;
 }
 
+
 // Editable fields
 // Update HP bar based on stats
 function updateHPBar() {
@@ -454,6 +469,126 @@ const basicRowSection = document.createElement('div');
 basicRowSection.className = 'summary-section';
 basicRowSection.appendChild(basicRow);
 infoBox.appendChild(basicRowSection);
+
+// === CAPABILITIES SECTION ===
+const capabilitiesSection = document.createElement('div');
+capabilitiesSection.className = 'summary-section';
+
+const capHeader = document.createElement('div');
+capHeader.style.display = 'flex';
+capHeader.style.alignItems = 'center';
+capHeader.style.marginBottom = '8px';
+capHeader.style.gap = '8px';
+
+const capTitle = document.createElement('h3');
+capTitle.textContent = 'Capabilities';
+capTitle.style.margin = '0';
+
+const addCapBtn = document.createElement('button');
+addCapBtn.textContent = '+';
+addCapBtn.style.width = '20px';
+addCapBtn.style.height = '20px';
+addCapBtn.style.borderRadius = '2px';
+addCapBtn.style.border = 'none';
+addCapBtn.style.background = '#4caf50';
+addCapBtn.style.color = 'white';
+addCapBtn.style.cursor = 'pointer';
+addCapBtn.style.fontSize = '15px';
+addCapBtn.title = 'Add Capability';
+
+capHeader.appendChild(capTitle);
+capHeader.appendChild(addCapBtn);
+capabilitiesSection.appendChild(capHeader);
+
+const capabilitiesGrid = document.createElement('div');
+capabilitiesGrid.style.display = 'grid';
+capabilitiesGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(150px, 1fr))';
+capabilitiesGrid.style.gap = '8px';
+
+capabilitiesSection.appendChild(capabilitiesGrid);
+infoBox.appendChild(capabilitiesSection);
+
+// Load existing capabilities
+const capabilities = Array.isArray(target.capabilities) ? target.capabilities : [];
+
+function saveCapabilities() {
+  updateField("capabilities", capabilities, dex);
+}
+
+function createCapabilityInput(initial = '') {
+  const wrapper = document.createElement('div');
+  wrapper.style.position = 'relative';
+  wrapper.style.display = 'flex';
+  wrapper.style.alignItems = 'center';
+  wrapper.style.justifyContent = 'center';
+  wrapper.style.background = 'white';
+  wrapper.style.borderRadius = '2px';
+  wrapper.style.boxSizing = 'border-box';
+  wrapper.style.padding = '4px';
+  wrapper.style.minHeight = '30px';
+  wrapper.style.width = '100%';
+  wrapper.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = initial;
+  input.placeholder = '';
+  input.style.padding = '4px';
+  input.style.border = 'none';
+  input.style.outline = 'none';
+  input.style.width = '100%';
+  input.style.background = 'transparent';
+  input.style.boxSizing = 'border-box';
+
+  input.onchange = async (e) => {
+    const index = Array.from(capabilitiesGrid.children).indexOf(wrapper);
+    if (index !== -1) {
+      capabilities[index] = e.target.value;
+      await saveCapabilities();
+    }
+  };
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.textContent = '×';
+  deleteBtn.style.position = 'absolute';
+  deleteBtn.style.top = '3px';
+  deleteBtn.style.right = '3px';
+  deleteBtn.style.width = '10px';
+  deleteBtn.style.height = '10px';
+  deleteBtn.style.borderRadius = '2px';
+  deleteBtn.style.border = 'none';
+  deleteBtn.style.background = 'transparent'; // red
+  deleteBtn.style.color = '#f44336';
+  deleteBtn.style.cursor = 'pointer';
+  deleteBtn.style.fontSize = '14px';
+  deleteBtn.style.display = 'flex';
+  deleteBtn.style.alignItems = 'center';
+  deleteBtn.style.justifyContent = 'center';
+  deleteBtn.title = 'Delete capability';
+
+  deleteBtn.onclick = async () => {
+    const index = Array.from(capabilitiesGrid.children).indexOf(wrapper);
+    if (index !== -1) {
+      capabilities.splice(index, 1);
+      wrapper.remove();
+      await saveCapabilities();
+    }
+  };
+
+  wrapper.appendChild(input);
+  wrapper.appendChild(deleteBtn);
+  capabilitiesGrid.appendChild(wrapper);
+}
+
+// Load existing ones
+capabilities.forEach(cap => createCapabilityInput(cap));
+
+// Add new on "+" click
+addCapBtn.addEventListener('click', () => {
+  capabilities.push('');
+  createCapabilityInput('');
+  saveCapabilities();
+});
 
 const abilityRow = document.createElement('div');
 abilityRow.className = 'ability-row';
@@ -518,9 +653,114 @@ const lvStats = target.lvStats || { hp: 0, atk: 0, def: 0, satk: 0, sdef: 0, spd
 
 renderHPSection(target);
 
+// Add this above createStatRow
+const stages = {
+  hp: 0,
+  atk: 0,
+  def: 0,
+  satk: 0,
+  sdef: 0,
+  spd: 0
+};
+
+const stageValueElements = {};
+const resultElements = {};
+
+// Stage multipliers
+function getStageMultiplier(stage) {
+  switch (stage) {
+    case -6: return 0.4;
+    case -5: return 0.5;
+    case -4: return 0.6;
+    case -3: return 0.7;
+    case -2: return 0.8;
+    case -1: return 0.9;
+    case 0: return 1.0;
+    case 1: return 1.2;
+    case 2: return 1.4;
+    case 3: return 1.6;
+    case 4: return 1.8;
+    case 5: return 2.0;
+    case 6: return 2.2;
+    default: return 1.0;
+  }
+}
+
+function recolorStage(stageValueEl, stage) {
+  if (stage > 0) {
+    stageValueEl.style.color = 'white';
+  } else if (stage < 0) {
+    stageValueEl.style.color = 'white';
+  } else {
+    stageValueEl.style.color = 'white';
+  }
+}
+
+function recalcStat(statKey) {
+  const base = baseStats[statKey] || 0;
+  const lv = lvStats[statKey] || 0;
+  const stage = stages[statKey] || 0;
+
+  const statSum = base + lv;
+  const multiplier = getStageMultiplier(stage);
+  const finalStat = Math.floor(statSum * multiplier);
+
+  resultElements[statKey].textContent = finalStat;
+  stageValueElements[statKey].textContent = stage > 0 ? "+" + stage : stage.toString();
+  recolorStage(stageValueElements[statKey], stage);
+  updateEvasionDisplay();
+}
+
 function createStatRow(statKey, label) {
   const block = document.createElement('div');
-block.className = `stat-block stat-${statKey}`;
+  block.className = `stat-block stat-${statKey}`;
+
+  const stageWrapper = document.createElement('div');
+  stageWrapper.className = 'stage-wrapper';
+  stageWrapper.style.display = 'flex';
+  stageWrapper.style.flexDirection = 'row';
+  stageWrapper.style.alignItems = 'center';
+  stageWrapper.style.justifyContent = 'space-between';
+  stageWrapper.style.gap = '4px';
+  stageWrapper.style.marginBottom = '4px';
+
+  const stageValue = document.createElement('div');
+  stageValue.textContent = '0';
+  stageValue.style.fontWeight = 'bold';
+  stageValue.style.marginBottom = '2px';
+
+  const upButton = document.createElement('button');
+  upButton.textContent = '▲';
+  upButton.style.fontSize = '10px';
+  upButton.style.lineHeight = '10px';
+  upButton.style.marginBottom = '2px';
+  upButton.style.padding = '2px';
+  upButton.style.cursor = 'pointer';
+  upButton.onclick = () => {
+    if (stages[statKey] < 6) {
+      stages[statKey]++;
+      recalcStat(statKey);
+    }
+  };
+
+  const downButton = document.createElement('button');
+  downButton.textContent = '▼';
+  downButton.style.fontSize = '10px';
+  downButton.style.lineHeight = '10px';
+  downButton.style.padding = '2px';
+  downButton.style.cursor = 'pointer';
+  downButton.onclick = () => {
+    if (stages[statKey] > -6) {
+      stages[statKey]--;
+      recalcStat(statKey);
+    }
+  };
+
+  stageWrapper.appendChild(downButton);
+  stageWrapper.appendChild(stageValue);
+  stageWrapper.appendChild(upButton);
+  block.appendChild(stageWrapper);
+  stageValueElements[statKey] = stageValue;
 
   const labelEl = document.createElement('div');
   labelEl.className = 'stat-label';
@@ -539,9 +779,7 @@ block.className = `stat-block stat-${statKey}`;
   baseInput.onchange = async () => {
     baseStats[statKey] = Number(baseInput.value);
     await saveStatBlock();
-    updateStatValue();
-    updateEvasionDisplay();
-    updateHPBar();
+    recalcStat(statKey);
   };
 
   const lvInput = document.createElement('input');
@@ -550,9 +788,7 @@ block.className = `stat-block stat-${statKey}`;
   lvInput.onchange = async () => {
     lvStats[statKey] = Number(lvInput.value);
     await saveStatBlock();
-    updateStatValue();
-    updateEvasionDisplay();
-    updateHPBar();
+    recalcStat(statKey);
   };
 
   inputRow.appendChild(baseInput);
@@ -561,10 +797,7 @@ block.className = `stat-block stat-${statKey}`;
   const result = document.createElement('div');
   result.className = 'stat-result';
   result.textContent = baseStats[statKey] + lvStats[statKey];
-
-  function updateStatValue() {
-    result.textContent = baseStats[statKey] + lvStats[statKey];
-  }
+  resultElements[statKey] = result;
 
   block.appendChild(labelEl);
   block.appendChild(inputLabelRow);
@@ -657,18 +890,20 @@ updateEvasionDisplay(); // ✅ Now it's safe to call
 
 // Function to update evasion display
 function updateEvasionDisplay() {
-  const stat = (base, lv) => base + lv;
+  const stat = (base, lv, stage) => Math.floor((base + lv) * getStageMultiplier(stage));
 
-  spdEva.textContent = `${Math.floor(stat(baseStats.spd, lvStats.spd) / 10)}`;
-  defEva.textContent = `${Math.floor(stat(baseStats.def, lvStats.def) / 5)}`;
-  sdefEva.textContent = `${Math.floor(stat(baseStats.sdef, lvStats.sdef) / 5)}`;
+  spdEva.textContent = `${Math.floor(stat(baseStats.spd, lvStats.spd, stages.spd) / 10)}`;
+  defEva.textContent = `${Math.floor(stat(baseStats.def, lvStats.def, stages.def) / 5)}`;
+  sdefEva.textContent = `${Math.floor(stat(baseStats.sdef, lvStats.sdef, stages.sdef) / 5)}`;
 }
 
 // === MOVES SECTION ===
 const movesBox = document.createElement('div');
 movesBox.className = 'moves-box';
 
-const moves = target.moves || Array(6).fill({ name: '', tag: '', desc: '' });
+const moves = Array.isArray(target.moves) && target.moves.length === 6
+  ? target.moves
+  : Array.from({ length: 6 }, () => ({ name: '', tag: '', meta: '', ac: '', frequency: '', range: '', desc: '' }));
 
 moves.forEach((move, index) => {
   const moveWrapper = document.createElement('div');
@@ -692,7 +927,7 @@ moves.forEach((move, index) => {
   // Small tag input
   const tagInput = document.createElement('input');
   tagInput.type = 'text';
-  tagInput.placeholder = 'N/A';
+  tagInput.placeholder = 'xdx + x';
   tagInput.value = move.tag || '';
   tagInput.className = 'move-tag';
   tagInput.onchange = async (e) => {
@@ -732,6 +967,46 @@ if (typeColors[typeVal]) {
   nameRow.appendChild(tagInput);
 nameRow.appendChild(metaInput);
 
+const extraRow = document.createElement('div');
+extraRow.className = 'move-extra-row';
+
+// AC Input
+const acInput = document.createElement('input');
+acInput.type = 'text';
+acInput.placeholder = 'AC';
+acInput.value = move.ac || '';
+acInput.className = 'move-ac';
+acInput.onchange = async (e) => {
+  moves[index].ac = e.target.value;
+  await saveMoves();
+};
+
+// Frequency Input
+const freqInput = document.createElement('input');
+freqInput.type = 'text';
+freqInput.placeholder = 'Frequency';
+freqInput.value = move.frequency || '';
+freqInput.className = 'move-frequency';
+freqInput.onchange = async (e) => {
+  moves[index].frequency = e.target.value;
+  await saveMoves();
+};
+
+// Range Input
+const rangeInput = document.createElement('input');
+rangeInput.type = 'text';
+rangeInput.placeholder = 'Range';
+rangeInput.value = move.range || '';
+rangeInput.className = 'move-range';
+rangeInput.onchange = async (e) => {
+  moves[index].range = e.target.value;
+  await saveMoves();
+};
+
+extraRow.appendChild(acInput);
+extraRow.appendChild(freqInput);
+extraRow.appendChild(rangeInput);
+
   // Move description input
   const descInput = document.createElement('textarea');
   descInput.placeholder = 'Move description...';
@@ -742,6 +1017,7 @@ nameRow.appendChild(metaInput);
   };
 
   moveWrapper.appendChild(nameRow);
+  moveWrapper.appendChild(extraRow);
   moveWrapper.appendChild(descInput);
   movesBox.appendChild(moveWrapper);
 });
@@ -751,6 +1027,90 @@ movesSection.className = 'summary-section';
 movesSection.appendChild(movesBox);
 infoBox.appendChild(movesSection);
 container.appendChild(infoBox);
+
+// === 📝 Notes Button and Modal ===
+const notesButton = document.createElement('button');
+notesButton.textContent = 'Notes';
+notesButton.style.position = 'absolute';
+notesButton.style.top = '8px';
+notesButton.style.right = '8px';
+notesButton.style.zIndex = '20';
+notesButton.style.padding = '6px 10px';
+notesButton.style.border = 'none';
+notesButton.style.borderRadius = '2px';
+notesButton.style.background = '#444';
+notesButton.style.color = 'white';
+notesButton.style.fontSize = '14px';
+notesButton.style.cursor = 'pointer';
+notesButton.title = 'Open Notes';
+
+container.style.position = 'relative';
+container.appendChild(notesButton);
+
+const modalBackdrop = document.createElement('div');
+modalBackdrop.style.position = 'fixed';
+modalBackdrop.style.top = '0';
+modalBackdrop.style.left = '0';
+modalBackdrop.style.width = '100vw';
+modalBackdrop.style.height = '100vh';
+modalBackdrop.style.background = 'rgba(0,0,0,0.5)';
+modalBackdrop.style.display = 'none';
+modalBackdrop.style.alignItems = 'center';
+modalBackdrop.style.justifyContent = 'center';
+modalBackdrop.style.zIndex = '100';
+
+const modalBox = document.createElement('div');
+modalBox.style.background = 'white';
+modalBox.style.padding = '16px';
+modalBox.style.borderRadius = '4px';
+modalBox.style.maxWidth = '400px';
+modalBox.style.width = '80%';
+modalBox.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+modalBox.style.display = 'flex';
+modalBox.style.flexDirection = 'column';
+modalBox.style.gap = '8px';
+
+const modalTitle = document.createElement('h3');
+modalTitle.textContent = ``;
+modalTitle.style.marginTop = '0';
+
+const notesArea = document.createElement('textarea');
+notesArea.style.width = '100%';
+notesArea.style.height = '150px';
+notesArea.placeholder = '';
+
+const saveNoteBtn = document.createElement('button');
+saveNoteBtn.textContent = 'Save';
+saveNoteBtn.style.alignSelf = 'flex-end';
+saveNoteBtn.style.padding = '6px 12px';
+saveNoteBtn.style.background = '#444';
+saveNoteBtn.style.color = 'white';
+saveNoteBtn.style.border = 'none';
+saveNoteBtn.style.borderRadius = '4px';
+saveNoteBtn.style.cursor = 'pointer';
+
+modalBox.appendChild(modalTitle);
+modalBox.appendChild(notesArea);
+modalBox.appendChild(saveNoteBtn);
+modalBackdrop.appendChild(modalBox);
+document.body.appendChild(modalBackdrop);
+
+notesButton.onclick = () => {
+  notesArea.value = target.notes || '';
+  modalBackdrop.style.display = 'flex';
+};
+
+modalBackdrop.onclick = (e) => {
+  if (e.target === modalBackdrop) {
+    modalBackdrop.style.display = 'none';
+  }
+};
+
+saveNoteBtn.onclick = async () => {
+  target.notes = notesArea.value;
+  await updateField("notes", target.notes, dex);
+  modalBackdrop.style.display = 'none';
+};
 
 // Save moves to Firestore
 async function saveMoves() {
@@ -804,9 +1164,84 @@ function renderHPSection(target) {
   currentHpInput.min = 0;
   currentHpInput.value = target.currentHP || 0;
   currentHpInput.style.width = '50px';
+  currentHpInput.style.marginRight = '8px';
+
+  currentHpInput.onchange = async (e) => {
+    const val = Number(e.target.value);
+    await updateField("currentHP", val, target.dex);
+    updateHPBar();
+  };
+
+  hpWrapper.appendChild(currentHpInput);
 
   maxDisplay = document.createElement('span');
   maxDisplay.style.marginLeft = '4px';
+  maxDisplay.style.marginRight = '8px'; // Add small spacing before Status
+  hpWrapper.appendChild(maxDisplay);
+
+  // 🎯 Status Dropdown
+  const statusSelect = document.createElement('select');
+  statusSelect.className = 'status-select';
+
+const statusTooltip = document.createElement('div');
+statusTooltip.className = 'status-tooltip';
+statusTooltip.style.position = 'absolute';
+statusTooltip.style.top = '100%';
+statusTooltip.style.left = '0';
+statusTooltip.style.marginTop = '4px';
+statusTooltip.style.padding = '6px 8px';
+statusTooltip.style.backgroundColor = 'white';
+statusTooltip.style.color = 'black';
+statusTooltip.style.fontSize = '12px';
+statusTooltip.style.borderRadius = '2px';
+statusTooltip.style.whiteSpace = 'normal';
+statusTooltip.style.width = '300px';
+statusTooltip.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
+statusTooltip.style.opacity = '0';
+statusTooltip.style.pointerEvents = 'none';
+statusTooltip.style.transition = 'opacity 0.2s ease';
+statusTooltip.style.zIndex = '10';
+statusTooltip.textContent = ''; // start empty
+
+const tooltipWrapper = document.createElement('div');
+tooltipWrapper.style.position = 'relative';
+tooltipWrapper.style.display = 'inline-block';
+
+tooltipWrapper.appendChild(statusSelect);
+tooltipWrapper.appendChild(statusTooltip);
+hpWrapper.appendChild(tooltipWrapper);
+
+  const statuses = ["Status", "Burned", "Frozen", "Paralyzed", "Poisoned", "Badly Poisoned", "Asleep", "Confused", "Bad Sleep"];
+
+  statuses.forEach(status => {
+    const option = document.createElement('option');
+    option.value = status;
+    option.textContent = status;
+    statusSelect.appendChild(option);
+  });
+
+  statusSelect.value = target.status || "None";
+  applyStatusColor(statusSelect); // Initial coloring
+
+  statusSelect.onchange = async (e) => {
+    await updateField("status", e.target.value, target.dex);
+    applyStatusColor(statusSelect);
+  };
+
+// Update tooltip text and show on hover
+statusSelect.addEventListener('mouseenter', () => {
+  const selected = statusSelect.value;
+  statusTooltip.textContent = statusEffects[selected] || '';
+  if (statusTooltip.textContent.trim() !== '') {
+    statusTooltip.style.opacity = '1';
+  }
+});
+
+statusSelect.addEventListener('mouseleave', () => {
+  statusTooltip.style.opacity = '0';
+});
+
+  hpWrapper.appendChild(statusSelect);
 
   const bar = document.createElement('div');
   bar.className = 'hp-bar';
@@ -814,21 +1249,33 @@ function renderHPSection(target) {
   barFill.className = 'hp-fill';
   bar.appendChild(barFill);
 
-  currentHpInput.onchange = async (e) => {
-    const val = Number(e.target.value);
-    await updateField("currentHP", val, dex);
-    updateHPBar();
-  };
+  const hpSection = document.createElement('div');
+  hpSection.className = 'summary-section';
+  hpSection.appendChild(hpWrapper);
+  hpSection.appendChild(bar);
 
-  hpWrapper.appendChild(currentHpInput);
-  hpWrapper.appendChild(maxDisplay);
-const hpSection = document.createElement('div');
-hpSection.className = 'summary-section';
-hpSection.appendChild(hpWrapper);
-hpSection.appendChild(bar);
-infoBox.appendChild(hpSection);
+  infoBox.appendChild(hpSection);
 
   updateHPBar(); // Initial render
+}
+
+// 🎨 Function to apply color based on status
+function applyStatusColor(select) {
+  const statusColors = {
+    "Status": "#dcdcdc",
+    "Burned": "#f44336",
+    "Frozen": "#00bcd4",
+    "Paralyzed": "#ffeb3b",
+    "Poisoned": "#9c27b0",
+    "Badly Poisoned": "#6a1b9a",
+    "Asleep": "#3f51b5",
+    "Confused": "#ff9800",
+    "Bad Sleep": "#5c6bc0"
+  };
+
+  const selected = select.value;
+  select.style.backgroundColor = statusColors[selected] || "#dcdcdc";
+  select.style.color = (selected === "Paralyzed") ? "black" : "white";
 }
 
 } catch (error) {
